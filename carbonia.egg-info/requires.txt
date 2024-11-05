@@ -1,0 +1,9 @@
+pandas
+numpy
+scikit-learn
+openai
+tiktoken
+tableauhyperapi
+python-dotenv
+pyyaml
+logging

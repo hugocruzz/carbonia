@@ -1,0 +1,13 @@
+LICENSE
+README.md
+setup.py
+carbonia/__init__.py
+carbonia/embeddings.py
+carbonia/match.py
+carbonia/utils.py
+carbonia.egg-info/PKG-INFO
+carbonia.egg-info/SOURCES.txt
+carbonia.egg-info/dependency_links.txt
+carbonia.egg-info/entry_points.txt
+carbonia.egg-info/requires.txt
+carbonia.egg-info/top_level.txt
