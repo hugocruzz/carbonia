@@ -3,33 +3,9 @@ import pandas as pd
 from openai import OpenAI
 import re
 import unicodedata
-def normalize_text(text):
-    """Normalize and clean the text string by:
-    - Removing excessive whitespace
-    - Stripping non-printable characters
-    - Replacing special characters
-    - Normalizing unicode characters to ASCII
-    """
-    # Normalize unicode characters to their closest ASCII equivalent
-    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8', 'ignore')
-    
-    # Remove non-printable characters
-    text = re.sub(r'[^\x00-\x7F]+', ' ', text)
-    
-    # Replace multiple spaces with a single space
-    text = re.sub(r'\s+', ' ', text)
-    
-    # Strip leading and trailing whitespace
-    text = text.strip()
-    
-    return text
+from .utils import check_and_normalize_series
 
-def check_and_normalize_series(series):
-    """Check and normalize a pandas Series of strings."""
-    return series.apply(lambda x: normalize_text(str(x)))
-
-
-def embed(data, embedding_model="text-embedding-ada-002", api_key=None):
+def embed(data, embedding_column_name=None, embedding_model="text-embedding-ada-002", api_key=None):
     """Embed a string, list, or dataframe using OpenAI embeddings."""
     
     if api_key is None:
@@ -65,11 +41,17 @@ def embed(data, embedding_model="text-embedding-ada-002", api_key=None):
             
             print("All batches processed.")
             return embeddings
-
-        data = data.fillna("")
+        if embedding_column_name is None:
+            embedding_column_name = data.columns
+        
         combined_column_name = "combined"
         output_embedding_name = "embedding"
-        data[combined_column_name] = data.apply(lambda x: ' '.join(x.astype(str)), axis=1)
+        
+        data[embedding_column_name] = data[embedding_column_name].fillna("")
+        if isinstance(embedding_column_name, list):
+            data[combined_column_name] = data[embedding_column_name].apply(lambda x: ' '.join(x.astype(str)), axis=1)
+        else:
+            data[combined_column_name] = data[embedding_column_name].astype(str) 
         df_unique = data[[combined_column_name]].drop_duplicates()
         normalized_unique_df = check_and_normalize_series(df_unique[combined_column_name])
         df_unique[output_embedding_name] = batch_embeddings(normalized_unique_df, batch_size=1500, export_chunk=False)
