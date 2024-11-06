@@ -1,4 +1,3 @@
-from tableauhyperapi import HyperProcess, Connection, Telemetry, TableDefinition, SqlType, Inserter, TableName, CreateMode
 import pandas as pd
 import logging
 import json
@@ -6,6 +5,8 @@ import yaml
 import os 
 from dotenv import load_dotenv
 from openai import OpenAI
+import re
+import unicodedata
 
 def find_columns_labels(source_df, api_key=None, contextual_columns_nb=1, model = "gpt-4o-mini"):
     df_head = source_df.head().to_json(orient='records')  
@@ -68,6 +69,7 @@ def setup_logging():
 def get_file_paths(base_path: str, suffix: str) -> str:
     """Generate file paths with given suffix."""
     return base_path.replace("." + base_path.split(".")[-1], suffix)
+
 def emphasize_and_combine_columns(df: pd.DataFrame, source_columns_emphasis: list, source_columns_to_embed: list) -> pd.DataFrame:
     """
     Emphasizes the specified columns by adding asterisks around non-empty strings, 
@@ -129,6 +131,7 @@ def update_dataframe_with_correction(source_df, corrected_df, key_column):
     
 
 def get_sqltype(dtype):
+    from tableauhyperapi import SqlType
     """Convert pandas dtype to Tableau Hyper SQLType."""
     if pd.api.types.is_integer_dtype(dtype):
         return SqlType.big_int()
@@ -143,7 +146,8 @@ def get_sqltype(dtype):
 
 def df_to_hyper(df, output_path):
     """Export a pandas DataFrame to a Tableau Hyper file."""
-    
+    from tableauhyperapi import HyperProcess, Connection, Telemetry, TableDefinition,  Inserter, TableName, CreateMode
+
     # Ensure all data is in the correct format before insertion
     receiver_data = []
     for _, row in df.iterrows():
@@ -197,8 +201,6 @@ def assign_columns(api_key, columns, source_df):
 
     return columns
 
-import re
-import unicodedata
 def normalize_text(text):
     """Normalize and clean the text string by:
     - Removing excessive whitespace

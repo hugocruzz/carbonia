@@ -1,4 +1,4 @@
-import os
+import os 
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -8,7 +8,6 @@ import time
 import logging
 from openai import OpenAIError
 
-import tiktoken
 import math
 
 
@@ -90,7 +89,7 @@ def estimate_chunk_size_deprecated(df_dict, token_limit=120000, model="gpt-4o-mi
     Returns:
     int: The calculated chunk size.
     """
-
+    import tiktoken
     # Initialize the tokenizer for the specified model
     tokenizer = tiktoken.encoding_for_model(model)
 
@@ -108,8 +107,6 @@ def estimate_chunk_size_deprecated(df_dict, token_limit=120000, model="gpt-4o-mi
     chunk_size = max(1, math.floor(len(df_dict) / num_chunks))
     
     return chunk_size
-import math
-import tiktoken  # Assuming you're using this for tokenization
 
 def estimate_chunk_size(df_dict, token_limit=120000, model="gpt-4o-mini"):
     """
@@ -123,7 +120,7 @@ def estimate_chunk_size(df_dict, token_limit=120000, model="gpt-4o-mini"):
     Returns:
     int: The calculated chunk size.
     """
-
+    import tiktoken
     # Initialize the tokenizer for the specified model
     tokenizer = tiktoken.get_encoding(model)
 
@@ -211,7 +208,7 @@ def choose_best_match_gpt(df_dict, model="gpt-3.5-turbo-0125", chunk_size=20):
     return output_json
 
 
-def match_datasets(df_source, df_target, top_n=10, gpt_model="gpt-4o-mini", api_key=None, chunk_size=20):
+def match(df_source, df_target, top_n=10, gpt_model="gpt-4o-mini", api_key=None, chunk_size=20):
     """
     Matches source and target datasets using embeddings and GPT model.
 
